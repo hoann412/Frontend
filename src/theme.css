@@ -1,0 +1,11 @@
+/* Dark mode */
+@theme {
+    --color-primary: #303030;
+    --color-secondary: #8a8a8f;
+    --color-background: white;
+    --container-10xl: 1580px;
+}
+.dark {
+    --color-primary: #fff;
+    --color-background: black;
+}

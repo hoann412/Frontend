@@ -1,0 +1,31 @@
+@import 'tailwindcss';
+@custom-variant dark (&:where(.dark, .dark *));
+@import './theme.css' layer(theme);
+
+@theme {
+    --breakpoint-xl: 1330px;
+    --container-7xl: 1330px;
+    --container-standard: 1200px;
+    --color-global: #333f48;
+    --color-hover: oklch(0.705 0.213 47.604);
+    --color-black: #1c2434;
+    --container-layout: 1580px;
+    --breakpoint-layout: 1580px;
+}
+
+/* custom popover transparent */
+.custom-popover-content {
+    background-color: transparent;
+    box-shadow: none;
+}
+
+.custom-popover-arrow {
+    display: none;
+}
+.antd-custom .ant-input-number input {
+    text-align: center !important;
+}
+
+.quantity--input .ant-input-number-input {
+    text-align: center;
+}
