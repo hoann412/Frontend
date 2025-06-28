@@ -24,10 +24,10 @@ const DashboardNew: React.FC = () => {
                 <LineChart />
             </div>
             <div>
-                <TopProducts  />
+                <TopProducts />
             </div>
             <div>
-                <TopUsers  />
+                <TopUsers />
             </div>
         </>
     );
