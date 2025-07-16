@@ -15,3 +15,4 @@ export const getBase64 = (file: FileType): Promise<string> =>
         reader.onload = () => resolve(reader.result as string);
         reader.onerror = (error) => reject(error);
     });
+//as
