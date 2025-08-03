@@ -1,0 +1,110 @@
+import { CheckCircleOutlined } from '@ant-design/icons';
+import { Avatar, Card, List, Spin, Typography, Watermark } from 'antd';
+import { Link, useNavigate, useParams } from 'react-router-dom';
+import { MAIN_ROUTES } from '~/constants/router';
+import useOrderDetails from '~/hooks/orders/Queries/useOrderDetails';
+import UseVNPayReturn from '~/hooks/orders/Queries/useVnPayReturn';
+import { Currency } from '~/utils';
+
+const { Title, Text } = Typography;
+export default function OrderSuccess() {
+    const navigate = useNavigate();
+    const { id } = useParams();
+    const { data: orderData, isPending } = useOrderDetails(id as string);
+    const params = new URLSearchParams(window.location.search);
+    const isSuccess = params.get('vnp_ResponseCode') == '00';
+    UseVNPayReturn(params);
+    if (!isSuccess) {
+        navigate(MAIN_ROUTES.ERROR_ORDER);
+        return null;
+    }
+    return (
+        <Watermark content={['BITTIS-STORE', 'THANK YOU']}>
+            <div className='flex min-h-screen flex-col items-center justify-center bg-gray-100 p-6'>
+                {orderData && !isPending ? (
+                    <Card className='w-full max-w-2xl rounded-xl p-6 text-center shadow-lg'>
+                        <div className='text-green-500'>
+                            <CheckCircleOutlined className='mb-4 text-5xl text-green-500' />
+                        </div>
+                        <div className='text-center text-3xl text-green-600'>Đặt hàng thành công!</div>
+                        <p className='text-gray-600'>Mã đơn hàng: {orderData._id}</p>
+                        <div className='mt-4 text-left'>
+                            <div className='flex gap-15'>
+                                <div>
+                                    <h3 className='mb-2 text-lg font-medium'>Người đặt hàng</h3>
+                                    <Text>Tên: {orderData.customerInfo.name}</Text>
+                                    <br />
+                                    <Text>Email: {orderData.customerInfo.email}</Text>
+                                    <br />
+                                    <Text>Điện thoại: {orderData.customerInfo.phone}</Text>
+                                </div>
+                                <div>
+                                    <h3 className='mb-2 text-lg font-medium'>Người nhận hàng</h3>
+                                    <Text>Tên: {orderData.receiverInfo.name}</Text>
+                                    <br />
+                                    <Text>Email: {orderData.receiverInfo.email}</Text>
+                                    <br />
+                                    <Text>Điện thoại: {orderData.receiverInfo.phone}</Text>
+                                </div>
+                            </div>
+                            <Title level={4} className='mt-4'>
+                                Địa chỉ giao hàng
+                            </Title>
+                            <Text>
+                                {orderData.shippingAddress.address},{orderData.shippingAddress.ward},{' '}
+                                {orderData.shippingAddress.district}, {orderData.shippingAddress.province}
+                            </Text>
+                            <Title level={4} className='mt-4'>
+                                Sản phẩm đã đặt
+                            </Title>
+                            <List
+                                itemLayout='horizontal'
+                                dataSource={orderData.items}
+                                renderItem={(item: any) => (
+                                    <Link to={`/product/${item.productId}`} className='group'>
+                                        <List.Item>
+                                            <List.Item.Meta
+                                                avatar={<Avatar src={item.image} shape='square' size={64} />}
+                                                title={
+                                                    <span className='duration-300 group-hover:text-cyan-600'>
+                                                        {item.name}
+                                                    </span>
+                                                }
+                                                description={`Size: ${item.size} | Số lượng: ${item.quantity} | Giá: ${Currency.format(item.price as number)}`}
+                                            />
+                                        </List.Item>
+                                    </Link>
+                                )}
+                            />
+                            <Title level={5} className='mt-4'>
+                                Phí giao hàng: {Currency.format(orderData.shippingFee)}
+                            </Title>
+                            {orderData.voucherCode && (
+                                <Title level={5} className='mt-4'>
+                                    Mã giảm giá ({orderData.voucherCode}): {Currency.format(orderData.voucherDiscount)}
+                                </Title>
+                            )}
+                            <Title level={4} className='mt-4'>
+                                Tổng tiền: {Currency.format(orderData.totalPrice)}
+                            </Title>
+                        </div>
+                        <div className='flex items-center gap-2'>
+                            <Link to='/' className='w-2/3'>
+                                <button className='mt-4 w-full cursor-pointer rounded-md border border-black px-4 py-2 text-black duration-300 hover:bg-black hover:text-white'>
+                                    Tiếp tục mua hàng
+                                </button>
+                            </Link>
+                            <Link to={`/my-orders/${orderData._id}`} className='w-2/3'>
+                                <button className='mt-4 w-full cursor-pointer rounded-md border border-black px-4 py-2 text-black duration-300 hover:bg-black hover:text-white'>
+                                    Xem đơn hàng
+                                </button>
+                            </Link>
+                        </div>
+                    </Card>
+                ) : (
+                    <Spin />
+                )}
+            </div>
+        </Watermark>
+    );
+}
