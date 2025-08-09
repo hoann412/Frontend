@@ -3,9 +3,9 @@ import { Button, Tag, Tooltip } from 'antd';
 import moment from 'moment';
 import { Link } from 'react-router-dom';
 import { ORDER_STATUS } from '~/constants/order';
+import useTable from '~/hooks/_common/useTable';
 import { OrderStatus } from '~/constants/enum';
-import useTable from '~/components/_common/useTable';
-import TableDisplay from '~/components/_common/TableDisplay';
+import TableDisplay from '../../../components/_common/TableDisplay';
 
 interface Props {
     ordersList: {
@@ -49,6 +49,13 @@ const OrderTable = ({ ordersList, totalDocs }: Props) => {
                   createdAt: order.createdAt,
               }))
             : [];
+            // Hàm rút ngắn mã đơn hàng
+const shortenOrderCode = (code: string, startLength: number = 6, endLength: number = 3) => {
+    if (!code) return '';
+    if (code.length <= startLength + endLength) return code;
+    return `${code.substring(0, startLength)}...${code.substring(code.length - endLength)}`;
+};
+
 
     const columns: TableColumnsType<DataType> = [
         {
@@ -56,11 +63,14 @@ const OrderTable = ({ ordersList, totalDocs }: Props) => {
             dataIndex: 'code',
             title: 'Mã Đơn Hàng',
             ...getColumnSearchProps('code'),
-            render: (text: string) => (
-                <Tooltip title={text}>
-                    <span className='font-medium text-blue-600 hover:underline'>#{text.substring(0, 8)}...</span>
-                </Tooltip>
-            ),
+           render: (text: string) => (
+    <Tooltip title={text}>
+        <span className='font-medium text-blue-600 hover:underline'>
+            #{shortenOrderCode(text)}
+        </span>
+    </Tooltip>
+),
+
             width: '15%',
         },
         {
